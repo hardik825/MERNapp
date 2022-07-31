@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const User = require("../models/User");
+const fetchuser = require("../middleware/fetchuser");
 
 const JWT_SECRET = "Harryisagoodb$oy";
 
@@ -102,4 +103,19 @@ router.post(
   }
 );
 
+// Route:2 Get loggin User Details using :POST "/api/auth/getuser" . login required
+
+router.post(
+  "/getuser",fetchuser,
+  async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await User.findById(userId).select("-password");
+      res.send(user)
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
 module.exports = router;
